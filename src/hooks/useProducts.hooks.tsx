@@ -5,5 +5,6 @@ export function useGetAllProducts() {
   return useQuery({
     queryKey: ["productsList"],
     queryFn: () => getAllProducts(),
+    staleTime: 0,
   });
 }

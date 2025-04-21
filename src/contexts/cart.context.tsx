@@ -4,6 +4,8 @@ import { createContext, useContext, useState, ReactNode } from "react";
 interface CartContextType {
   totalQuantityInCart: number;
   setTotalQuantityInCart: React.Dispatch<React.SetStateAction<number>>;
+  updateProductCards: boolean;
+  setUpdateProductCards: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -21,11 +23,17 @@ interface CartProviderProps {
 }
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
+  const [updateProductCards, setUpdateProductCards] = useState(false);
   const [totalQuantityInCart, setTotalQuantityInCart] = useState(0);
 
   return (
     <CartContext.Provider
-      value={{ totalQuantityInCart, setTotalQuantityInCart }}
+      value={{
+        totalQuantityInCart,
+        setTotalQuantityInCart,
+        updateProductCards,
+        setUpdateProductCards,
+      }}
     >
       {children}
     </CartContext.Provider>

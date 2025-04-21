@@ -10,12 +10,20 @@ import {
   removeFromLocalStorage,
 } from "@/src/utils/helpers";
 import { useEffect } from "react";
+import { useCart } from "@/src/contexts/cart.context";
 
 const ProductsPage = () => {
   const userId = getFromLocalStorage("userId");
 
   const { showBoundary } = useErrorBoundary();
-  const { data: productsResponse, isLoading, error } = useGetAllProducts();
+  const { updateProductCards, setUpdateProductCards } = useCart();
+
+  const {
+    data: productsResponse,
+    isLoading,
+    error,
+    refetch,
+  } = useGetAllProducts();
   const {
     data: cartsResponse,
     isLoading: cartLoading,
@@ -28,9 +36,19 @@ const ProductsPage = () => {
   const totalCartItems =
     cartDetails?.reduce((acc: any, item: any) => acc + item.quantity, 0) || 0;
 
-  if (isLoading || cartLoading) return <Loader />;
-  if (error || cartError) showBoundary(error);
+  useEffect(() => {
+    if (updateProductCards) {
+      refetch();
+      setUpdateProductCards(false);
+    }
+  }, [updateProductCards]);
 
+  if (isLoading || cartLoading) {
+    return <Loader />;
+  }
+  if (error || cartError) {
+    showBoundary(error);
+  }
 
   return (
     <div className="p-6 min-h-screen">
