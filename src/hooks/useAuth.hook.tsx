@@ -23,6 +23,7 @@ export function useLogin() {
       toast.success(data.message);
     },
     onError: (error) => {
+      toast.error("Invalid Credentials");
       console.error("Failed to login:", error);
     },
   });
