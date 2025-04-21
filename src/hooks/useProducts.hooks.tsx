@@ -6,5 +6,6 @@ export function useGetAllProducts() {
     queryKey: ["productsList"],
     queryFn: () => getAllProducts(),
     staleTime: 0,
+    refetchOnWindowFocus: false,
   });
 }

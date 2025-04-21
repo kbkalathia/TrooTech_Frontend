@@ -11,6 +11,8 @@ import {
 } from "@/src/utils/helpers";
 import { useEffect } from "react";
 import { useCart } from "@/src/contexts/cart.context";
+import { io } from "socket.io-client";
+import toast from "react-hot-toast";
 
 const ProductsPage = () => {
   const userId = getFromLocalStorage("userId");
@@ -22,8 +24,9 @@ const ProductsPage = () => {
     data: productsResponse,
     isLoading,
     error,
-    refetch,
+    refetch: productsRefetch,
   } = useGetAllProducts();
+
   const {
     data: cartsResponse,
     isLoading: cartLoading,
@@ -38,10 +41,35 @@ const ProductsPage = () => {
 
   useEffect(() => {
     if (updateProductCards) {
-      refetch();
+      productsRefetch();
       setUpdateProductCards(false);
     }
   }, [updateProductCards]);
+
+  useEffect(() => {
+    const socketInstance = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
+      path: "/socket.io",
+      transports: ["websocket"],
+    });
+
+    socketInstance.on("product-added", () => {
+      toast.success("New Product Added");
+    });
+
+    socketInstance.on("product-updated", (data) => {
+      toast.success("Product Updated");
+    });
+
+    socketInstance.on("product-removed", () => {
+      toast.success("Product Removed");
+    });
+
+    return () => {
+      if (socketInstance) {
+        socketInstance.disconnect();
+      }
+    };
+  }, []);
 
   if (isLoading || cartLoading) {
     return <Loader />;
